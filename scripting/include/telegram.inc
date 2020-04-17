@@ -6,23 +6,38 @@
 #if !defined REQUIRE_PLUGIN
 public __pl_telegram_SetNTVOptional()
 {
-	MarkNativeAsOptional("TelegramMsg");
-	MarkNativeAsOptional("TelegramSend");
+	MarkNativeAsOptional("Telegram_SendMessage");
+	MarkNativeAsOptional("Telegram_SendPhoto");
+	MarkNativeAsOptional("Telegram_SendPoll");
 }
 #endif
 
 /**
- * Setup a message text.
+ * Send text messages.
  *
- * @param   szMessage      Text
+ * @param	szText			Text of the message to be sent
+ * @param	szParseMode		Markdown or HTML
  *
  * @return  void
  */
-native void TelegramMsg(const char[] szMessage);
+native void Telegram_SendMessage(char[] szText, char[] szParseMode);
 
 /**
- * Ends a message, sending into Telegram.
+ * Send photos.
+ *
+ * @param	szPhoto			Photo to send. Pass an HTTP URL as a String
  *
  * @return  void
  */
-native void TelegramSend();
+native void Telegram_SendPhoto(char[] szPhoto);
+
+/**
+ * Create native poll.
+ *
+ * @param	szQuestion		Poll question
+ * @param	Poll			List of answer options
+ * @param	IsAnon			True, if the poll needs to be anonymous
+ *
+ * @return  void
+ */
+native void Telegram_SendPoll(char[] szQuestion, JSONArray Poll, bool IsAnon = true);
