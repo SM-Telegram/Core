@@ -1,23 +1,40 @@
 #include <sourcemod>
 #include <ripext>
 
-static const char APIURL[256] = "https://api.telegram.org/bot<TOKEN>"; // @BotFather
-static const char ChatId[256] = "";
-
 public Plugin myinfo =
 {
 	author = "Alexbu444",
 	name = "[Telegram] Core (LiteServers LLP)",
-	description	= "Library for sending messages via bot to Telegram",
-	version = "1.1.0",
+	description = "Library for sending messages via bot to Telegram",
+	version = "1.1.1",
 	url = "https://t.me/alexmo812"
 };
 
 HTTPClient httpClient;
 
+char szPath[256], szChatId[256];
+
 public void OnPluginStart()
 {
-	httpClient = new HTTPClient(APIURL);
+	BuildPath(Path_SM, szPath, sizeof(szPath), "configs/TelegramCore.cfg");
+	
+	char szApiKey[256], szApiUrl[256];
+	
+	KeyValues kv = new KeyValues("Telegram");
+	if(!kv.ImportFromFile(szPath) || !kv.GotoFirstSubKey())
+		SetFailState("[Telegram] file is not found (%s)", szPath);
+	
+	kv.Rewind();
+	
+	if(kv.JumpToKey("Settings"))
+	{
+		kv.GetString("token", szApiKey, sizeof(szApiKey));
+		kv.GetString("chatId", szChatId, sizeof(szChatId));
+	}
+	
+	FormatEx(szApiUrl, sizeof(szApiUrl), "https://api.telegram.org/bot%s", szApiKey);
+	
+	httpClient = new HTTPClient(szApiUrl);
 }
 
 public APLRes AskPluginLoad2(Handle hMyself, bool bLate, char[] sError, int iErr_max) 
@@ -38,7 +55,7 @@ public int TG_SendMessage(Handle hPlugin, int iNumParams)
 	GetNativeString(2, szParseMode, sizeof(szParseMode));
 	
 	JSONObject hRequest = new JSONObject();
-	hRequest.SetString("chat_id", ChatId);
+	hRequest.SetString("chat_id", szChatId);
 	hRequest.SetString("text", szText);
 	hRequest.SetString("parse_mode", szParseMode);
 	
@@ -53,7 +70,7 @@ public int TG_SendPhoto(Handle hPlugin, int iNumParams)
 	GetNativeString(1, szPhoto, sizeof(szPhoto));
 	
 	JSONObject hRequest = new JSONObject();
-	hRequest.SetString("chat_id", ChatId);
+	hRequest.SetString("chat_id", szChatId);
 	hRequest.SetString("photo", szPhoto);
 	
 	httpClient.Post("sendPhoto", hRequest, OnRequestComplete);
@@ -70,7 +87,7 @@ public int TG_SendPoll(Handle hPlugin, int iNumParams)
 	bool IsAnon = GetNativeCell(3);
 	
 	JSONObject hRequest = new JSONObject();
-	hRequest.SetString("chat_id", ChatId);
+	hRequest.SetString("chat_id", szChatId);
 	hRequest.SetString("question", szQuestion);
 	hRequest.Set("options", Poll);
 	hRequest.SetBool("is_anonymous", IsAnon);
