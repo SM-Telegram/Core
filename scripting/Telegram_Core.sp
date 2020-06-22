@@ -48,7 +48,7 @@ public APLRes AskPluginLoad2(Handle hMyself, bool bLate, char[] sError, int iErr
 
 public int TG_SendMessage(Handle hPlugin, int iNumParams)
 {
-	char szText[256];
+	char szText[1024];
 	GetNativeString(1, szText, sizeof(szText));
 	
 	char szParseMode[256];
