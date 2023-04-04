@@ -6,7 +6,7 @@ public Plugin myinfo =
 	author = "Alexbu444",
 	name = "[Telegram] Core (LiteServers LLP)",
 	description = "Library for sending messages via bot to Telegram",
-	version = "1.1.1",
+	version = "2.0.0",
 	url = "https://t.me/alexmo812"
 };
 
@@ -30,6 +30,7 @@ public void OnPluginStart()
 	{
 		kv.GetString("token", szApiKey, sizeof(szApiKey));
 		kv.GetString("chatId", szChatId, sizeof(szChatId));
+		strcopy(szChatId, sizeof(szChatId), szChatId[3]);
 	}
 	
 	FormatEx(szApiUrl, sizeof(szApiUrl), "https://api.telegram.org/bot%s", szApiKey);
